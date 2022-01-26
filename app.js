@@ -3,11 +3,27 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require('dotenv').config()
+const mongoose = require('mongoose')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var addController = require('./routes/add');
 
 var app = express();
+const db = process.env.MongoURL
+if(db){
+  mongoose.connect(db)
+  .then(()=>{
+    console.log("Connected success")
+  })
+  .catch(err=>{
+    console.log(err)
+    console.log("Something went wrong")
+  })
+}
+else {
+  console.log("No url")
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -20,7 +36,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api', addController);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
